@@ -6,42 +6,97 @@
     <title>Amo's Shoe Store - Botswana</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        header { background: black; color: white; padding: 20px; text-align: center; font-size: 24px; }
-        nav { background: #333; padding: 10px; text-align: center; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+        header { background: black; color: white; padding: 20px; text-align: center; font-size: 28px; font-weight: bold; }
+        nav { background: #333; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
         nav a { color: white; text-decoration: none; margin: 0 15px; font-size: 18px; }
-        .container { padding: 20px; text-align: center; }
-        .product { display: inline-block; margin: 20px; padding: 20px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 10px; }
-        .product img { width: 200px; height: auto; border-radius: 10px; }
-        .button { background: black; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px; }
-        footer { background: black; color: white; text-align: center; padding: 10px; margin-top: 20px; }
+        .search-bar { padding: 8px; width: 200px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; margin-right: 20px; }
+        .container { padding: 20px; text-align: center; display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; }
+        .product { width: 250px; padding: 20px; border: 1px solid #ddd; background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .product img { width: 100%; height: auto; border-radius: 10px; }
+        .button { background: black; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px; font-weight: bold; transition: 0.3s; cursor: pointer; }
+        .button:hover { background: #ff4500; }
+        .checkout-container { max-width: 400px; margin: 20px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); display: none; }
+        .checkout-form input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+        footer { background: black; color: white; text-align: center; padding: 15px; margin-top: 20px; font-size: 16px; }
     </style>
 </head>
 <body>
     <header>Amo's Shoe Store - Botswana</header>
     <nav>
-        <a href="home.html">Home</a>
-        <a href="products.html">Products</a>
-        <a href="about.html">About Us</a>
-        <a href="contact.html">Contact</a>
-        <a href="services.html">Services</a>
+        <div>
+            <a href="home.html">Home</a>
+            <a href="products.html">Products</a>
+            <a href="about.html">About Us</a>
+            <a href="contact.html">Contact</a>
+            <a href="services.html">Services</a>
+            <a href="Signin.html">Signin</a>
+            <a href="Newdeals.html">Newdeals</a>
+        </div>
+        <input type="text" class="search-bar" onkeyup="searchProducts()" placeholder="Search for Nike shoes...">
     </nav>
-    <div class="container" id="products">
-        <div class="product">
-            <img src="https://via.placeholder.com/200" alt="Nike Shoe">
-            <h2>Nike Air Max</h2>
-            <p>Price: P1500</p>
-            <a href="#order" class="button">Order Now</a>
-        </div>
-        <div class="product">
-            <img src="https://via.placeholder.com/200" alt="Nike Shoe">
-            <h2>Nike ZoomX</h2>
-            <p>Price: P1800</p>
-            <a href="#order" class="button">Order Now</a>
-        </div>
+
+    <div class="container" id="products"></div>
+
+    <div class="checkout-container" id="checkout">
+        <h2>Checkout</h2>
+        <form class="checkout-form">
+            <input type="text" id="name" placeholder="Your Name" required>
+            <input type="text" id="address" placeholder="Your Address" required>
+            <input type="text" id="phone" placeholder="Phone Number" required>
+            <button type="button" class="button" onclick="placeOrder()">Place Order</button>
+        </form>
     </div>
+
     <footer>
         <p>&copy; 2025 Amo's Shoe Store. All rights reserved.</p>
     </footer>
+
+    <script>
+        let products = [
+            { name: "Nike Air Max DN Essential", price: 1500, image: "nike air max dn essential.png" },
+            { name: "Nike ZoomX", price: 1800, image: "nike1.png" },
+            { name: "Nike Pegasus", price: 1700, image: "nike2.png" },
+            { name: "Nike Air Max Plus Drift", price: 1600, image: "nike air max plus drift.png" },
+            { name: "Nike Air Max Plus", price: 2000, image: "nike air max plus.png" },
+            { name: "Nike Air DN 8", price: 1400, image: "nike.png" },
+            { name: "Nike Court Vission Low", price: 1550, image: "nike court vission low.png" },
+            { name: "Nike Gato", price: 1300, image: "nike gato.png" },
+            { name: "Nike Killshot 2 Leather", price: 1750, image: "nike killshot 2 leather.png" },
+            { name: "Nike Shox R4", price: 1650, image: "nike shox r4.png" }
+        ];
+
+        function displayProducts(filteredProducts = products) {
+            let productsContainer = document.getElementById("products");
+            productsContainer.innerHTML = "";
+            filteredProducts.forEach(product => {
+                productsContainer.innerHTML += `
+                    <div class="product">
+                        <img src="${product.image}" alt="${product.name}">
+                        <h2>${product.name}</h2>
+                        <p><strong>Price:</strong> P${product.price}</p>
+                        <button class="button" onclick="showCheckout()">Order Now</button>
+                    </div>
+                `;
+            });
+        }
+
+        function searchProducts() {
+            let searchQuery = document.querySelector(".search-bar").value.toLowerCase();
+            let filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchQuery));
+            displayProducts(filteredProducts);
+        }
+
+        function showCheckout() {
+            document.getElementById("checkout").style.display = "block";
+        }
+
+        function placeOrder() {
+            alert("Thank you for your order!");
+            document.getElementById("checkout").style.display = "none";
+        }
+
+        displayProducts();
+    </script>
 </body>
 </html>
